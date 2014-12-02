@@ -28,6 +28,11 @@ public:
 
 	// TODO just for test
 	CC_SYNTHESIZE(StatusDelegate*, delegator, Delegator);
+
+private:
+	const int BACKGROUND_LAYER_TAG = 0;
+
+	Menu* menu;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

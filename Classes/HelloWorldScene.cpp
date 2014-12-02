@@ -81,7 +81,8 @@ bool HelloWorld::init()
 											CC_CALLBACK_1(HelloWorld::menuModeFeelingCallback, this));
 	feelingItem->setPosition(Vec2(origin.x + visibleSize.width /2, visibleSize.height * 3 / 5));
 
-	auto menu = Menu::create(normalItem, feelingItem, NULL);
+	menu = Menu::create(normalItem, feelingItem, NULL);
+	menu->retain();
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
@@ -100,19 +101,7 @@ bool HelloWorld::init()
     this->addChild(sprite, 0);
 
 	auto backgroundLayer = BackgroundLayer::create();
-	this->addChild(backgroundLayer, 0);
-
-	auto gameLayer = GameLayer::create();
-	this->addChild(gameLayer, 1);
-
-
-	auto statusLayer = StatusLayer::create();
-	this->addChild(statusLayer, 2);
-	this->setDelegator(statusLayer);
-
-	auto controlLayer = ControlLayer::create();
-	controlLayer->setDelegator(gameLayer);
-	this->addChild(controlLayer, 3);
+	this->addChild(backgroundLayer, 0, BACKGROUND_LAYER_TAG);
 
 
     return true;
@@ -133,9 +122,30 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 #endif
 }
 
-void HelloWorld::menuModeNormalCallback(Ref* pSender){
-	this->delegator->updateScore(50);
+void HelloWorld::menuModeNormalCallback(Ref* pSender)
+{
+	this->removeChildByTag(BACKGROUND_LAYER_TAG);
+	this->menu->setVisible(false);
+
+	auto backgroundLayer = BackgroundLayer::create();
+	this->addChild(backgroundLayer, 0);
+
+	auto gameLayer = GameLayer::create();
+	this->addChild(gameLayer, 1);
+
+	auto statusLayer = StatusLayer::create();
+	this->addChild(statusLayer, 2);
+
+	gameLayer->setStatusDelegator(statusLayer);
+	gameLayer->setbackgroundDelegator(backgroundLayer);
+
+	auto controlLayer = ControlLayer::create();
+	controlLayer->setDelegator(gameLayer);
+	this->addChild(controlLayer, 3);
+
 }
 
-void HelloWorld::menuModeFeelingCallback(Ref* pSender){
+void HelloWorld::menuModeFeelingCallback(Ref* pSender)
+{
+
 }

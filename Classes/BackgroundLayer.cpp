@@ -29,18 +29,6 @@ bool BackgroundLayer::init()
 	// just for test
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(BackgroundLayer::testMenuCallBack, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
 	return true;
 }
 
@@ -81,6 +69,7 @@ void BackgroundLayer::onMoveOver()
 
 }
 
+// TODO the SkinType should be maintain by the scene
 void BackgroundLayer::setSkinType(int type)
 {
 	if (this->skinType != type)
@@ -101,7 +90,6 @@ void BackgroundLayer::setSkinType(int type)
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	float h;
 
 	switch (type)
 	{
@@ -147,7 +135,7 @@ void BackgroundLayer::setSkinType(int type)
 	}
 }
 
-void BackgroundLayer::testMenuCallBack(Ref* pSender)
+void BackgroundLayer::moveLeft()
 {
-	moveLeft(3, 200);
+	moveLeft(1, 100);
 }

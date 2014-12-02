@@ -1,11 +1,12 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "GameLayer.h"
 
 using namespace cocos2d;
 using namespace std;
 
-class BackgroundLayer : public Layer
+class BackgroundLayer : public Layer, public BackgroundDelegate
 {
 public:
 	BackgroundLayer();
@@ -16,6 +17,7 @@ public:
 	void moveLeft(float duration, float deltaX);
 	void onMoveOver();
 	void setSkinType(int mode);
+	void moveLeft();
 
 	const static int SKIN_TYPE_0 = 0;
 	const static int SKIN_TYPE_1 = 1;
@@ -24,6 +26,9 @@ public:
 	void testMenuCallBack(Ref* pSender);
 
 private:
+
+	// TODO the SkinType should be maintain by the scene
+	// TODO should retain the members
 	Vector<Sprite* > upSprites;
 	Vector<Sprite* > downSprites;
 	Sprite* pGroundSprite;

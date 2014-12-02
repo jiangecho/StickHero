@@ -45,7 +45,7 @@ bool GameLayer::init()
 		pillarSprite->retain();
 		pillarSprites.pushBack(pillarSprite);
 
-		pillarSprite = obtainRandomPillar(pillarSprite);
+		pillarSprite = obtainRandomLastPillar();
 		pillarSprite->retain();
 		pillarSprites.pushBack(pillarSprite);
 
@@ -180,6 +180,9 @@ void GameLayer::moveHeroRight()
 	}
 	else
 	{
+		currentScore += SCORE_PER_PILLAR;
+		statusDelegate->updateScore(currentScore);
+		backgroundDelegate->moveLeft();
 		// move the the next pillar right edge
 		moveTo = MoveTo::create(1, Vec2(sprite1->getPosition().x + sprite1->getContentSize().width / 2 - hero->getContentSize().width / 2, hero->getPosition().y));
 	}
@@ -242,7 +245,7 @@ void GameLayer::onMoveLeftEnd()
 	pillarSprite->release();
 
 	pillarSprite = pillarSprites.at(1);
-	pillarSprite = obtainRandomPillar(pillarSprite);
+	pillarSprite = obtainRandomLastPillar();
 	pillarSprite->retain();
 	pillarSprites.pushBack(pillarSprite);
 	spritesNode->addChild(pillarSprite);

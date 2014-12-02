@@ -21,6 +21,13 @@ public:
 	virtual void onGameStatus(GameStatus status) = 0;
 };
 
+class BackgroundDelegate
+{
+public:
+	virtual void moveLeft() = 0;
+
+};
+
 class GameLayer : public Layer, public ControlDelegate
 {
 public:
@@ -32,6 +39,9 @@ public:
 	bool onTouchBegan(Touch* touch, Event  *event);
 	void onTouchMoved(Touch* touch, Event* event);
 	void onTouchEnded(Touch* touch, Event* event);
+
+	CC_SYNTHESIZE(StatusDelegate*, statusDelegate, StatusDelegator);
+	CC_SYNTHESIZE(BackgroundDelegate*, backgroundDelegate, backgroundDelegator);
 
 private:
 	void longerStick(float dt);
@@ -60,5 +70,7 @@ private:
 	Animate * heroAnimate;
 	GameStatus status;
 	bool isHeroMoving;
+
+	const int SCORE_PER_PILLAR = 5;
 };
 

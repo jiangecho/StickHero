@@ -36,19 +36,17 @@ bool GameLayer::init()
 		pillarSprite->setPosition(origin.x + pillarSprite->getContentSize().width / 2, origin.y + pillarSprite->getContentSize().height / 2);
 		pillarSprites.pushBack(pillarSprite);
 
-		currentPillar = pillarSprite;
 		hero->setPosition(pillarSprite->getPosition().x + pillarSprite->getContentSize().width /2 - hero->getContentSize().width / 2, 
 							pillarSprite->getPosition().y + pillarSprite->getContentSize().height / 2 + hero->getContentSize().height / 2);
 
 		// TODO modify the x location
-		pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[1]);
+		pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[2]);
+		pillarSprite->setPosition(origin.x + 200 + pillarSprite->getContentSize().width, origin.y + pillarSprite->getContentSize().height / 2);
 		pillarSprite->retain();
-		pillarSprite->setPosition(origin.x + 200 + pillarSprite->getContentSize().width / 2, origin.y + pillarSprite->getContentSize().height / 2);
 		pillarSprites.pushBack(pillarSprite);
 
-		pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[2]);
+		pillarSprite = obtainRandomPillar(pillarSprite);
 		pillarSprite->retain();
-		pillarSprite->setPosition(origin.x + visibleSize.width + 100 + pillarSprite->getContentSize().width / 2, origin.y + pillarSprite->getContentSize().height / 2);
 		pillarSprites.pushBack(pillarSprite);
 
 		auto stickSprite = Sprite::createWithSpriteFrameName(s_stick);
@@ -169,9 +167,10 @@ void GameLayer::moveHeroRight()
 {
 	MoveTo* moveTo;
 	float stickHeight = currentStick->getContentSize().height * currentStick->getScaleY();
+	auto sprite0 = pillarSprites.at(0);
 	auto sprite1 = pillarSprites.at(1);
 	float distanceBetweenPillars = sprite1->getPosition().x - sprite1->getContentSize().width / 2 
-									- (currentPillar->getPosition().x + currentPillar->getContentSize().width / 2);
+									- (sprite0->getPosition().x + sprite0->getContentSize().width / 2);
 	if (stickHeight < abs(distanceBetweenPillars) || stickHeight > distanceBetweenPillars + sprite1->getContentSize().width)
 	{
 		status = GAME_STATUS_DYING;
@@ -242,19 +241,20 @@ void GameLayer::onMoveLeftEnd()
 	pillarSprites.eraseObject(pillarSprite, false);
 	pillarSprite->release();
 
-	// TODO random
-	pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[0]);
+	pillarSprite = pillarSprites.at(1);
+	pillarSprite = obtainRandomPillar(pillarSprite);
 	pillarSprite->retain();
-	pillarSprite->setPosition(origin.x + visibleSize.width + 100, origin.y + pillarSprite->getContentSize().height / 2);
 	pillarSprites.pushBack(pillarSprite);
 	spritesNode->addChild(pillarSprite);
-	currentPillar = pillarSprite;
 
+	// remove the unvisible stick
 	auto stickSprite = stickSprites.at(0);
 	spritesNode->removeChild(stickSprite, true);
 	stickSprites.eraseObject(stickSprite, false);
 	stickSprite->release();
 
+	// add a new stick
+	// TODO refactor to a function?
 	stickSprite = Sprite::createWithSpriteFrameName(s_stick);
 	pillarSprite = pillarSprites.at(0);
 	stickSprite->setAnchorPoint(Vec2(0.5, 0));
@@ -266,5 +266,24 @@ void GameLayer::onMoveLeftEnd()
 	spritesNode->addChild(currentStick);
 
 
+}
+
+
+Sprite* GameLayer::obtainRandomLastPillar()
+{
+	srand((unsigned)time(NULL));
+	auto origin = Director::getInstance()->getVisibleOrigin();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	int pillarIndex = rand() % (sizeof(s_scene_3_pillars) / sizeof(s_scene_3_pillars[0]));
+
+	auto pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[pillarIndex]);
+	float pillarSpritePositionX = 0;
+	pillarSpritePositionX = (rand() % (int)(pillarSprites.at(1)->getPosition().x + pillarSprites.at(1)->getContentSize().width / 2 
+												- hero->getContentSize().width - pillarSprites.at(0)->getPosition().x)) 
+									+ visibleSize.width + pillarSprite->getContentSize().width / 2;
+
+	pillarSprite->setPosition(pillarSpritePositionX, origin.y + pillarSprite->getContentSize().height / 2);
+
+	return pillarSprite;
 }
 

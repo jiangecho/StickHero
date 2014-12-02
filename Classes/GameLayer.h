@@ -42,6 +42,7 @@ private:
 	void onMoveHeroRightEnd();
 	void moveLeft();
 	void onMoveLeftEnd();
+	Sprite* obtainRandomLastPillar();
 	
 	// TODO the following functions, maybe we do not need it
 	void updateScore(int score);
@@ -52,7 +53,6 @@ private:
 
 	Vector<Sprite*> stickSprites;
 	Vector<Sprite*> pillarSprites;
-	Sprite* currentPillar;
 	Sprite* currentStick;
 	Sprite* hero;
 	Node* spritesNode;

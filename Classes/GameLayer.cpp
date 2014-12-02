@@ -2,7 +2,7 @@
 #include "Resource.h"
 
 
-GameLayer::GameLayer() :currentScore(0), status(GAME_STATUS_READY)
+GameLayer::GameLayer() :currentScore(0), status(GAME_STATUS_READY), isHeroMoving(false)
 {
 }
 
@@ -57,6 +57,15 @@ bool GameLayer::init()
 		// attention how to set anchor point
 		stickSprite->setAnchorPoint(Vec2(0.5, 0));
 		stickSprite->retain();
+
+		// at the initial state, the first stick is not visible
+		stickSprite->setPosition(-100, 
+									spite->getPosition().y + spite->getContentSize().height / 2);
+		stickSprites.pushBack(stickSprite);
+
+		stickSprite = Sprite::createWithSpriteFrameName(s_stick);
+		stickSprite->setAnchorPoint(Vec2(0.5, 0));
+		stickSprite->retain();
 		stickSprite->setPosition(spite->getPosition().x + spite->getContentSize().width / 2, 
 									spite->getPosition().y + spite->getContentSize().height / 2);
 		stickSprites.pushBack(stickSprite);
@@ -83,7 +92,7 @@ bool GameLayer::init()
 
 bool GameLayer::onTouchBegan(Touch* touch, Event  *event)
 {
-	if (status != GAME_STATUS_READY)
+	if (isHeroMoving)
 	{
 		return false;
 	}
@@ -101,27 +110,17 @@ void GameLayer::onTouchMoved(Touch* touch, Event* event)
 
 void GameLayer::onTouchEnded(Touch* touch, Event* event)
 {
-	if (status != GAME_STATUS_ON_GOING)
+	if (isHeroMoving)
 	{
 		return;
 	}
+	isHeroMoving = true;
+
 	CCLOG("ontouchend");
 	unschedule(schedule_selector(GameLayer::longerStick));
 	//currentStick->stopActionByTag(longerActionTag);
 	currentStick->stopAllActions();
 
-	float stickHeight = currentStick->getContentSize().height * currentStick->getScaleY();
-
-	auto sprite1 = pillarSprites.at(1);
-	float distanceBetweenPillars = sprite1->getPosition().x - sprite1->getContentSize().width / 2 
-									- (currentPillar->getPosition().x + currentPillar->getContentSize().width / 2);
-	if (stickHeight >= distanceBetweenPillars && stickHeight < distanceBetweenPillars + sprite1->getContentSize().width)
-	{
-	}
-	else
-	{
-		status = GAME_STATUS_DYING;
-	}
 	rotateStickRight();
 
 }
@@ -168,11 +167,25 @@ void GameLayer::onRotateStickRigtEnd()
 // TODO the hero shold move to the most right of the pillar if possible
 void GameLayer::moveHeroRight()
 {
-	auto sprite1 = pillarSprites.at(1);
-
+	MoveTo* moveTo;
 	float stickHeight = currentStick->getContentSize().height * currentStick->getScaleY();
-	auto moveBy = MoveBy::create(1, Vec2(stickHeight, 0));
-	auto spawn = Spawn::createWithTwoActions(heroAnimate, moveBy);
+	auto sprite1 = pillarSprites.at(1);
+	float distanceBetweenPillars = sprite1->getPosition().x - sprite1->getContentSize().width / 2 
+									- (currentPillar->getPosition().x + currentPillar->getContentSize().width / 2);
+	if (stickHeight < abs(distanceBetweenPillars) || stickHeight > distanceBetweenPillars + sprite1->getContentSize().width)
+	{
+		status = GAME_STATUS_DYING;
+
+		// move to the end of the stick
+		moveTo = MoveTo::create(1, Vec2(hero->getPosition().x + stickHeight + hero->getContentSize().width / 2, hero->getPosition().y));
+	}
+	else
+	{
+		// move the the next pillar right edge
+		moveTo = MoveTo::create(1, Vec2(sprite1->getPosition().x + sprite1->getContentSize().width / 2 - hero->getContentSize().width / 2, hero->getPosition().y));
+	}
+
+	auto spawn = Spawn::createWithTwoActions(heroAnimate, moveTo);
 	auto actionDone = CallFuncN::create(CC_CALLBACK_0(GameLayer::onMoveHeroRightEnd, this));
 	auto sequence = Sequence::create(spawn, actionDone, nullptr);
 	hero->runAction(sequence);
@@ -208,6 +221,7 @@ void GameLayer::moveLeft()
 }
 void GameLayer::onMoveLeftEnd()
 {
+	isHeroMoving = false;
 	// adjust the coordinate
 	auto origin = Director::getInstance()->getVisibleOrigin();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -222,6 +236,7 @@ void GameLayer::onMoveLeftEnd()
 
 	// "add" new pillar and stick sprite
 	
+	// remove the unvisible pillar
 	auto pillarSprite = pillarSprites.at(0);
 	spritesNode->removeChild(pillarSprite, true);
 	pillarSprites.eraseObject(pillarSprite, false);
@@ -235,7 +250,12 @@ void GameLayer::onMoveLeftEnd()
 	spritesNode->addChild(pillarSprite);
 	currentPillar = pillarSprite;
 
-	auto stickSprite = Sprite::createWithSpriteFrameName(s_stick);
+	auto stickSprite = stickSprites.at(0);
+	spritesNode->removeChild(stickSprite, true);
+	stickSprites.eraseObject(stickSprite, false);
+	stickSprite->release();
+
+	stickSprite = Sprite::createWithSpriteFrameName(s_stick);
 	pillarSprite = pillarSprites.at(0);
 	stickSprite->setAnchorPoint(Vec2(0.5, 0));
 	stickSprite->retain();
@@ -245,15 +265,6 @@ void GameLayer::onMoveLeftEnd()
 	currentStick = stickSprite;
 	spritesNode->addChild(currentStick);
 
-	for each (Sprite* sprite in stickSprites)
-	{
-		if (!sprite->isVisible())
-		{
-			spritesNode->removeChild(sprite, true);
-			stickSprites.eraseObject(sprite, false);
-			sprite->release();
-		}
-	}
 
 }
 

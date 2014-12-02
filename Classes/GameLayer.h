@@ -59,5 +59,6 @@ private:
 
 	Animate * heroAnimate;
 	GameStatus status;
+	bool isHeroMoving;
 };
 

@@ -1,4 +1,5 @@
 #include "MainMenuLayer.h"
+#include "HelloWorldScene.h"
 
 
 MainMenuLayer::MainMenuLayer()
@@ -32,16 +33,16 @@ bool MainMenuLayer :: init()
 	auto menu = Menu::create(normalItem, feelingItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
-	
+
 	return true;
 }
 
 void MainMenuLayer::menuModeNormalCallback(Ref* pSender)
 {
-	this->setVisible(false);
+	this->delegate->onMenuModeNormalCallBack();
 }
 
 void MainMenuLayer::menuModeFeelingCallback(Ref* pSender)
 {
-	this->setVisible(false);
+	this->delegate->onMenuModeFeelingCallback();
 }

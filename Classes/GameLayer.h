@@ -14,19 +14,14 @@ typedef enum _gameStatus{
 	GAME_STATUS_DEAD
 } GameStatus;
 
-class StatusDelegate
+class GameEventDelegate
 {
 public:
-	virtual void updateScore(int score) = 0;
+	virtual void onGetScore(int score) = 0;
 	virtual void onGameStatus(GameStatus status) = 0;
+	virtual void onMoveHeroRight() = 0;
 };
 
-class BackgroundDelegate
-{
-public:
-	virtual void moveLeft() = 0;
-
-};
 
 class GameLayer : public Layer, public ControlDelegate
 {
@@ -40,8 +35,7 @@ public:
 	void onTouchMoved(Touch* touch, Event* event);
 	void onTouchEnded(Touch* touch, Event* event);
 
-	CC_SYNTHESIZE(StatusDelegate*, statusDelegate, StatusDelegator);
-	CC_SYNTHESIZE(BackgroundDelegate*, backgroundDelegate, backgroundDelegator);
+	CC_SYNTHESIZE(GameEventDelegate*, delegate, Delegator);
 
 private:
 	void longerStick(float dt);
@@ -55,7 +49,7 @@ private:
 	Sprite* obtainRandomLastPillar();
 	
 	// TODO the following functions, maybe we do not need it
-	void updateScore(int score);
+	void getScore(int score);
 	void gameOver();
 
 	int currentScore;

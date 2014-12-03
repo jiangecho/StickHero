@@ -6,7 +6,7 @@
 using namespace cocos2d;
 using namespace std;
 
-class BackgroundLayer : public Layer, public BackgroundDelegate
+class BackgroundLayer : public Layer
 {
 public:
 	BackgroundLayer();
@@ -21,9 +21,6 @@ public:
 
 	const static int SKIN_TYPE_0 = 0;
 	const static int SKIN_TYPE_1 = 1;
-
-	// just for test
-	void testMenuCallBack(Ref* pSender);
 
 private:
 

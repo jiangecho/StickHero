@@ -3,6 +3,12 @@
 
 using namespace cocos2d;
 
+class MainMenuDelegate
+{
+public:
+	virtual void onMenuModeNormalCallBack() = 0;
+	virtual void onMenuModeFeelingCallback() = 0;
+};
 class MainMenuLayer : public Layer
 {
 public:
@@ -13,5 +19,7 @@ public:
 
 	void menuModeNormalCallback(Ref* pSender);
 	void menuModeFeelingCallback(Ref* pSender);
+
+	CC_SYNTHESIZE(MainMenuDelegate*, delegate, Delegator);
 };
 

@@ -135,14 +135,14 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 
 }
 
-void GameLayer::updateScore(int score)
+void GameLayer::getScore(int score)
 {
-
+	this->delegate->onGetScore(score);
 }
 
 void GameLayer::gameOver()
 {
-
+	this->delegate->onGameStatus(GAME_STATUS_DEAD);
 }
 
 void GameLayer::longerStick(float dt)
@@ -193,11 +193,11 @@ void GameLayer::moveHeroRight()
 	else
 	{
 		currentScore += SCORE_PER_PILLAR;
-		statusDelegate->updateScore(currentScore);
-		backgroundDelegate->moveLeft();
+		this->delegate->onGetScore(SCORE_PER_PILLAR);
 		// move the the next pillar right edge
 		moveTo = MoveTo::create(1, Vec2(sprite1->getPosition().x + sprite1->getContentSize().width / 2 - hero->getContentSize().width / 2, hero->getPosition().y));
 	}
+	this->delegate->onMoveHeroRight();
 
 	auto spawn = Spawn::createWithTwoActions(heroAnimate, moveTo);
 	auto actionDone = CallFuncN::create(CC_CALLBACK_0(GameLayer::onMoveHeroRightEnd, this));
@@ -212,8 +212,10 @@ void GameLayer::onMoveHeroRightEnd()
 		// TODO notify gameover
 		auto moveTo = MoveTo::create(1, Vec2(hero->getPosition().x, - (hero->getContentSize().height / 2)));
 		auto rotate = RotateBy::create(1, 90);
+		auto actionDone = CallFuncN::create(CC_CALLBACK_0(GameLayer::gameOver, this));
+		auto sequence = Sequence::create(rotate, actionDone, nullptr);
 		hero->runAction(moveTo);
-		stickSprites.at(1)->runAction(rotate);
+		stickSprites.at(1)->runAction(sequence);
 	}
 	else
 	{

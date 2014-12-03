@@ -4,7 +4,7 @@
 
 using namespace cocos2d;
 
-class StatusLayer : public Layer, public StatusDelegate
+class StatusLayer : public Layer
 {
 public:
 	StatusLayer();
@@ -15,7 +15,8 @@ public:
 	CREATE_FUNC(StatusLayer);
 
 	void updateScore(int score);
-	void onGameStatus(GameStatus status);
+	void showPrompt();
+	void hidePrompt();
 
 
 private:

@@ -41,13 +41,11 @@ void StatusLayer::updateScore(int score)
 	Value value(score);
 	scoreLabel->setString(value.asString());
 }
-
-void StatusLayer::onGameStatus(GameStatus status)
+void StatusLayer::showPrompt()
 {
-	// TODO DO NOT REMOVE, JUST HIDE IT;
-	//if (status == GAME_STATUS_)
-	{
-		this->removeChild(promptLabel);
-	}
-
+	promptLabel->setVisible(true);
+}
+void StatusLayer::hidePrompt()
+{
+	promptLabel->setVisible(false);
 }

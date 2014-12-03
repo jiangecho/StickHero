@@ -63,7 +63,6 @@ private:
 
 	Vector<Sprite*> stickSprites;
 	Vector<Sprite*> pillarSprites;
-	Sprite* currentStick;
 	Sprite* hero;
 	Node* spritesNode;
 

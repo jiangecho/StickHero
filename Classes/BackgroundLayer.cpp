@@ -2,13 +2,19 @@
 #include "Resource.h"
 
 
-BackgroundLayer::BackgroundLayer() : skinType(SKIN_TYPE_0), spriteNodes(nullptr), layerColor(nullptr)
+BackgroundLayer::BackgroundLayer() : skinType(SKIN_TYPE_0), groundSprite(nullptr), spriteNodes(nullptr), layerColor(nullptr)
 {
 }
 
 
 BackgroundLayer::~BackgroundLayer()
 {
+	CC_SAFE_RELEASE(groundSprite);
+	CC_SAFE_RELEASE(layerColor);
+	for each (Sprite* sprite in sprites)
+	{
+		CC_SAFE_RELEASE(sprite);
+	}
 }
 
 bool BackgroundLayer::init()
@@ -18,12 +24,12 @@ bool BackgroundLayer::init()
 		return false;
 	}
 
-	if (upSprites.size() == 0) // do not call setMode
+	if (sprites.size() == 0) // do not call setMode
 	{
 		setSkinType(this->skinType);
 	}
 
-	this->addChild(pGroundSprite);
+	this->addChild(groundSprite);
 	this->addChild(spriteNodes);
 
 	// just for test
@@ -43,7 +49,7 @@ void BackgroundLayer::moveLeft(float duration, float deltaX)
 
 void BackgroundLayer::onMoveOver()
 {
-	auto sprite = upSprites.at(0);
+	auto sprite = sprites.at(0);
 	if (sprintf == nullptr)
 	{
 		return;
@@ -55,15 +61,15 @@ void BackgroundLayer::onMoveOver()
 	auto leftSpriteWorldPosition = spriteNodes->convertToWorldSpace(sprite->getPosition());
 	if (leftSpriteWorldPosition.x + (sprite->getContentSize().width * sprite->getScaleX() / 2) < 0)
 	{
-		upSprites.eraseObject(sprite, false);
-		for each (Sprite* sprite in upSprites)
+		sprites.eraseObject(sprite, false);
+		for each (Sprite* sprite in sprites)
 		{
 			auto position = spriteNodes->convertToWorldSpace(sprite->getPosition());
 			sprite->setPosition(position);
 		}
 		spriteNodes->setPosition(origin);
 		sprite->setPosition(origin.x + visibleSize.width + sprite->getContentSize().width / 2, sprite->getPosition().y);
-		upSprites.pushBack(sprite);
+		sprites.pushBack(sprite);
 	}
 
 
@@ -76,8 +82,16 @@ void BackgroundLayer::setSkinType(int type)
 	{
 		this->skinType = type;
 	}
-	upSprites.clear();
-	downSprites.clear();
+	else
+	{
+		CC_SAFE_RELEASE(groundSprite);
+		CC_SAFE_RELEASE(layerColor);
+		for each (Sprite* sprite in sprites)
+		{
+			CC_SAFE_RELEASE(sprite);
+		}
+	}
+	sprites.clear();
 	if (spriteNodes != nullptr)
 	{
 		spriteNodes->removeAllChildren();
@@ -94,36 +108,42 @@ void BackgroundLayer::setSkinType(int type)
 	switch (type)
 	{
 		case SKIN_TYPE_0:
-		pGroundSprite = Sprite::create(s_scene_grounds[2]);
-		pGroundSprite->setPosition(Vec2(origin.x + visibleSize.width /2, origin.y + pGroundSprite->getContentSize().height / 2));
-		pGroundSprite->setScaleX(visibleSize.width / pGroundSprite->getContentSize().width);
+		groundSprite = Sprite::create(s_scene_grounds[2]);
+		groundSprite->retain();
+		groundSprite->setPosition(Vec2(origin.x + visibleSize.width /2, origin.y + groundSprite->getContentSize().height / 2));
+		groundSprite->setScaleX(visibleSize.width / groundSprite->getContentSize().width);
 
 		// add a color back ground
 		layerColor = LayerColor::create(ccc4(5, 31, 67, 200));
+		layerColor->retain();
 		this->addChild(layerColor);
 
 		auto sprite = Sprite::create(s_scene_3_stars[0]);
+		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + sprite->getContentSize().width / 2, origin.y + visibleSize.height * 3 / 4));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);
-		upSprites.pushBack(sprite);
+		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[1]);
+		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height * 3 / 5));
 		spriteNodes->addChild(sprite);
-		upSprites.pushBack(sprite);
+		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[2]);
+		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width / 2 + sprite->getContentSize().width / 2, origin.y + visibleSize.height * 4 / 5));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);
-		upSprites.pushBack(sprite);
+		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[3]);
+		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width, origin.y + visibleSize.height * 2 / 3));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);
-		upSprites.pushBack(sprite);
+		sprites.pushBack(sprite);
 
 
 		// TODO downSprites
@@ -139,3 +159,5 @@ void BackgroundLayer::moveLeft()
 {
 	moveLeft(1, 100);
 }
+
+

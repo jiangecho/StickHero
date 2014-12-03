@@ -1,13 +1,15 @@
 #include "StatusLayer.h"
 
 
-StatusLayer::StatusLayer()
+StatusLayer::StatusLayer() :scoreLabel(nullptr), promptLabel(nullptr)
 {
 }
 
 
 StatusLayer::~StatusLayer()
 {
+	CC_SAFE_RELEASE(scoreLabel);
+	CC_SAFE_RELEASE(promptLabel);
 }
 
 bool StatusLayer::init()

@@ -10,6 +10,19 @@ GameLayer::GameLayer() :currentScore(0), status(GAME_STATUS_READY), isHeroMoving
 // TODO release the sprites in the vector
 GameLayer::~GameLayer()
 {
+	CC_SAFE_RELEASE(hero);
+	CC_SAFE_RELEASE(spritesNode);
+	CC_SAFE_RELEASE(heroAnimate);
+
+	for each (Sprite* sprite in stickSprites)
+	{
+		CC_SAFE_RELEASE(sprite);
+	}
+
+	for each (Sprite* sprite in pillarSprites)
+	{
+		CC_SAFE_RELEASE(sprite);
+	}
 }
 
 bool GameLayer::init()
@@ -68,9 +81,8 @@ bool GameLayer::init()
 									spite->getPosition().y + spite->getContentSize().height / 2);
 		stickSprites.pushBack(stickSprite);
 
-		currentStick = stickSprite;
-
 		spritesNode = Node::create();
+		spritesNode->retain();
 		spritesNode->addChild(hero);
 		for each (Sprite* sprite in pillarSprites)
 		{
@@ -116,8 +128,8 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 
 	CCLOG("ontouchend");
 	unschedule(schedule_selector(GameLayer::longerStick));
-	//currentStick->stopActionByTag(longerActionTag);
-	currentStick->stopAllActions();
+	//stickSprites.at(1)->stopActionByTag(longerActionTag);
+	stickSprites.at(1)->stopAllActions();
 
 	rotateStickRight();
 
@@ -136,15 +148,15 @@ void GameLayer::gameOver()
 void GameLayer::longerStick(float dt)
 {
 	CCLOG("longerStick");
-	auto scaleTo = ScaleTo::create(1, 1, currentStick->getContentSize().height + 100);
-	currentStick->runAction(scaleTo);
+	auto scaleTo = ScaleTo::create(1, 1, stickSprites.at(1)->getContentSize().height + 100);
+	stickSprites.at(1)->runAction(scaleTo);
 }
 
 // TODO remove it
 void GameLayer::rotateStick(float degree)
 {
 	auto rotateBy = RotateBy::create(1, degree);
-	currentStick->runAction(rotateBy);
+	stickSprites.at(1)->runAction(rotateBy);
 }
 
 void GameLayer::rotateStickRight()
@@ -153,7 +165,7 @@ void GameLayer::rotateStickRight()
 	auto callF = CallFuncN::create(CC_CALLBACK_0(GameLayer::onRotateStickRigtEnd, this));
 	// attention how to construct a sequence action
 	auto squence = Sequence::create(rotateBy, callF, nullptr);
-	currentStick->runAction(squence);
+	stickSprites.at(1)->runAction(squence);
 
 }
 void GameLayer::onRotateStickRigtEnd()
@@ -166,7 +178,7 @@ void GameLayer::onRotateStickRigtEnd()
 void GameLayer::moveHeroRight()
 {
 	MoveTo* moveTo;
-	float stickHeight = currentStick->getContentSize().height * currentStick->getScaleY();
+	float stickHeight = stickSprites.at(1)->getContentSize().height * stickSprites.at(1)->getScaleY();
 	auto sprite0 = pillarSprites.at(0);
 	auto sprite1 = pillarSprites.at(1);
 	float distanceBetweenPillars = sprite1->getPosition().x - sprite1->getContentSize().width / 2 
@@ -201,7 +213,7 @@ void GameLayer::onMoveHeroRightEnd()
 		auto moveTo = MoveTo::create(1, Vec2(hero->getPosition().x, - (hero->getContentSize().height / 2)));
 		auto rotate = RotateBy::create(1, 90);
 		hero->runAction(moveTo);
-		currentStick->runAction(rotate);
+		stickSprites.at(1)->runAction(rotate);
 	}
 	else
 	{
@@ -265,8 +277,7 @@ void GameLayer::onMoveLeftEnd()
 	stickSprite->setPosition(pillarSprite->getPosition().x + pillarSprite->getContentSize().width / 2, 
 								pillarSprite->getPosition().y + pillarSprite->getContentSize().height / 2);
 	stickSprites.pushBack(stickSprite);
-	currentStick = stickSprite;
-	spritesNode->addChild(currentStick);
+	spritesNode->addChild(stickSprites.at(1));
 
 
 }

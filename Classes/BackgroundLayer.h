@@ -29,10 +29,8 @@ private:
 
 	// TODO the SkinType should be maintain by the scene
 	// TODO should retain the members
-	Vector<Sprite* > upSprites;
-	Vector<Sprite* > downSprites;
-	Sprite* pGroundSprite;
-	Sprite* backGroundSprite;
+	Vector<Sprite* > sprites;
+	Sprite* groundSprite;
 	Node* spriteNodes;
 	LayerColor* layerColor;
 

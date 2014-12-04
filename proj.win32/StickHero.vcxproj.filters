@@ -23,6 +23,7 @@
     <ClCompile Include="..\Classes\ControlLayer.cpp" />
     <ClCompile Include="..\Classes\MainMenuLayer.cpp" />
     <ClCompile Include="..\Classes\Game.cpp" />
+    <ClCompile Include="..\Classes\ResultLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -37,6 +38,7 @@
     <ClInclude Include="..\Classes\Resource.h" />
     <ClInclude Include="..\Classes\MainMenuLayer.h" />
     <ClInclude Include="..\Classes\Game.h" />
+    <ClInclude Include="..\Classes\ResultLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

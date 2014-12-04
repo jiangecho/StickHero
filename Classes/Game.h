@@ -10,6 +10,8 @@ private:
 	Game* pGame;
 	int skinType;
 	int currentScore;
+	int bestScore;
 	int status;
+	int mode;
 };
 

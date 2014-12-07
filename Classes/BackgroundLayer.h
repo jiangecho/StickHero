@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "GameLayer.h"
+#include "Game.h"
 
 using namespace cocos2d;
 using namespace std;
@@ -19,9 +20,6 @@ public:
 	void setSkinType(int mode);
 	void moveLeft();
 
-	const static int SKIN_TYPE_0 = 0;
-	const static int SKIN_TYPE_1 = 1;
-
 private:
 
 	// TODO the SkinType should be maintain by the scene
@@ -30,8 +28,5 @@ private:
 	Sprite* groundSprite;
 	Node* spriteNodes;
 	LayerColor* layerColor;
-
-	// TODO the skin should be control be the scene
-	int skinType;
 };
 

@@ -14,6 +14,7 @@ HelloWorld::~HelloWorld()
 	CC_SAFE_RELEASE(gameLayer);
 	CC_SAFE_RELEASE(statusLayer);
 	CC_SAFE_RELEASE(controlLayer);
+
 }
 
 // on "init" you need to initialize your instance
@@ -53,6 +54,7 @@ bool HelloWorld::init()
 	this->addChild(initialBackgroundLayer, 0, BACKGROUND_LAYER_TAG);
 	this->addChild(mainMenuLayer, 100);
 
+	game = Game::getInstance();
     return true;
 }
 
@@ -72,9 +74,9 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 }
 */
 
-void HelloWorld::onGetScore(int score)
+void HelloWorld::onGetScore()
 {
-	statusLayer->updateScore(100);
+	statusLayer->updateScore(game->getScore());
 	statusLayer->hidePrompt();
 }
 
@@ -93,6 +95,8 @@ void HelloWorld::onMoveHeroRight()
 // TODO bug: only need to add the layers one time
 void HelloWorld::onMenuModeNormalCallBack()
 {
+	game->setMode(MODE_NORMAL);
+
 	this->removeChildByTag(BACKGROUND_LAYER_TAG);
 	this->mainMenuLayer->setVisible(false);
 

@@ -2,7 +2,7 @@
 #include "Resource.h"
 
 
-BackgroundLayer::BackgroundLayer() : skinType(SKIN_TYPE_0), groundSprite(nullptr), spriteNodes(nullptr), layerColor(nullptr)
+BackgroundLayer::BackgroundLayer() : groundSprite(nullptr), spriteNodes(nullptr), layerColor(nullptr)
 {
 }
 
@@ -11,10 +11,8 @@ BackgroundLayer::~BackgroundLayer()
 {
 	CC_SAFE_RELEASE(groundSprite);
 	CC_SAFE_RELEASE(layerColor);
-	for each (Sprite* sprite in sprites)
-	{
-		CC_SAFE_RELEASE(sprite);
-	}
+	CC_SAFE_RELEASE(spriteNodes);
+	sprites.clear();
 }
 
 bool BackgroundLayer::init()
@@ -26,7 +24,7 @@ bool BackgroundLayer::init()
 
 	if (sprites.size() == 0) // do not call setMode
 	{
-		setSkinType(this->skinType);
+		setSkinType(Game::getInstance()->getSkinType());
 	}
 
 	this->addChild(groundSprite);
@@ -75,23 +73,13 @@ void BackgroundLayer::onMoveOver()
 
 }
 
-// TODO the SkinType should be maintain by the scene
 void BackgroundLayer::setSkinType(int type)
 {
-	if (this->skinType != type)
-	{
-		this->skinType = type;
-	}
-	else
-	{
-		CC_SAFE_RELEASE(groundSprite);
-		CC_SAFE_RELEASE(layerColor);
-		for each (Sprite* sprite in sprites)
-		{
-			CC_SAFE_RELEASE(sprite);
-		}
-	}
+	CC_SAFE_RELEASE(groundSprite);
+	CC_SAFE_RELEASE(layerColor);
+	// do not release spriteNodes here
 	sprites.clear();
+
 	if (spriteNodes != nullptr)
 	{
 		spriteNodes->removeAllChildren();
@@ -99,12 +87,14 @@ void BackgroundLayer::setSkinType(int type)
 	else
 	{
 		spriteNodes = Node::create();
+		spriteNodes->retain();
 	}
 
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	// TODO do not use swith case to find the right resource
 	switch (type)
 	{
 		case SKIN_TYPE_0:
@@ -119,27 +109,23 @@ void BackgroundLayer::setSkinType(int type)
 		this->addChild(layerColor);
 
 		auto sprite = Sprite::create(s_scene_3_stars[0]);
-		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + sprite->getContentSize().width / 2, origin.y + visibleSize.height * 3 / 4));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);
 		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[1]);
-		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height * 3 / 5));
 		spriteNodes->addChild(sprite);
 		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[2]);
-		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width / 2 + sprite->getContentSize().width / 2, origin.y + visibleSize.height * 4 / 5));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);
 		sprites.pushBack(sprite);
 
 		sprite = Sprite::create(s_scene_3_stars[3]);
-		sprite->retain();
 		sprite->setPosition(Vec2(origin.x + visibleSize.width, origin.y + visibleSize.height * 2 / 3));
 		sprite->setScale(0.5);
 		spriteNodes->addChild(sprite);

@@ -38,6 +38,11 @@ int Game::getBestScore()
 	return this->bestScore;
 }
 
+int Game::getScore()
+{
+	return this->currentScore;
+}
+
 void Game::addScore(int score)
 {
 	this->currentScore += score;

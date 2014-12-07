@@ -2,7 +2,7 @@
 #include "Resource.h"
 
 
-GameLayer::GameLayer() :currentScore(0), status(GAME_STATUS_READY), isHeroMoving(false)
+GameLayer::GameLayer() :status(GAME_STATUS_READY), isHeroMoving(false)
 {
 }
 
@@ -131,9 +131,9 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 
 }
 
-void GameLayer::getScore(int score)
+void GameLayer::getScore()
 {
-	this->delegate->onGetScore(score);
+	this->delegate->onGetScore();
 }
 
 void GameLayer::gameOver()
@@ -188,8 +188,8 @@ void GameLayer::moveHeroRight()
 	}
 	else
 	{
-		currentScore += SCORE_PER_PILLAR;
-		this->delegate->onGetScore(SCORE_PER_PILLAR);
+		Game::getInstance()->addScore(SCORE_PER_PILLAR);
+		getScore();
 		// move the the next pillar right edge
 		moveTo = MoveTo::create(1, Vec2(sprite1->getPosition().x + sprite1->getContentSize().width / 2 - hero->getContentSize().width / 2, hero->getPosition().y));
 	}

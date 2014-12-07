@@ -6,6 +6,7 @@
 #include "StatusLayer.h"
 #include "GameLayer.h"
 #include "MainMenuLayer.h"
+#include "Game.h"
 
 using namespace cocos2d;
 
@@ -15,7 +16,7 @@ public:
 	HelloWorld();
 	~HelloWorld();
 	virtual bool init();
-	void onGetScore(int score);
+	void onGetScore();
 	void onGameStatus(GameStatus status);
 	void onMoveHeroRight();
 	void onMenuModeNormalCallBack();
@@ -31,6 +32,7 @@ private:
 	MainMenuLayer* mainMenuLayer;
 	StatusLayer* statusLayer;
 	ControlLayer* controlLayer;
+	Game* game;
 
 	const int BACKGROUND_LAYER_TAG = 0;
 

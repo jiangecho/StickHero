@@ -28,10 +28,13 @@ public:
 	SkinType getSkinType();
 
 	int getBestScore();
+	int getScore();
 	void addScore(int score);
 
 	Mode getMode();
 	void setMode(Mode mode);
+
+	const int SCORE_PER_PILLAR = 5;
 
 private:
 	Game();

@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "ControlLayer.h"
+#include "Game.h"
 
 using namespace cocos2d;
 using namespace std;
@@ -17,7 +18,7 @@ typedef enum _gameStatus{
 class GameEventDelegate
 {
 public:
-	virtual void onGetScore(int score) = 0;
+	virtual void onGetScore() = 0;
 	virtual void onGameStatus(GameStatus status) = 0;
 	virtual void onMoveHeroRight() = 0;
 };
@@ -49,10 +50,9 @@ private:
 	Sprite* obtainRandomLastPillar();
 	
 	// TODO the following functions, maybe we do not need it
-	void getScore(int score);
+	void getScore();
 	void gameOver();
 
-	int currentScore;
 	int longerActionTag = 1;
 
 	Vector<Sprite*> stickSprites;
@@ -64,6 +64,5 @@ private:
 	GameStatus status;
 	bool isHeroMoving;
 
-	const int SCORE_PER_PILLAR = 5;
 };
 

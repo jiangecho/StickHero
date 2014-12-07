@@ -14,15 +14,8 @@ GameLayer::~GameLayer()
 	CC_SAFE_RELEASE(spritesNode);
 	CC_SAFE_RELEASE(heroAnimate);
 
-	for each (Sprite* sprite in stickSprites)
-	{
-		CC_SAFE_RELEASE(sprite);
-	}
-
-	for each (Sprite* sprite in pillarSprites)
-	{
-		CC_SAFE_RELEASE(sprite);
-	}
+	pillarSprites.clear();
+	stickSprites.clear();
 }
 
 bool GameLayer::init()
@@ -45,7 +38,7 @@ bool GameLayer::init()
 		heroAnimate->retain();
 
 		auto pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[0]);
-		pillarSprite->retain();
+		//pillarSprite->retain();
 		pillarSprite->setPosition(origin.x + pillarSprite->getContentSize().width / 2, origin.y + pillarSprite->getContentSize().height / 2);
 		pillarSprites.pushBack(pillarSprite);
 
@@ -55,11 +48,11 @@ bool GameLayer::init()
 		// TODO modify the x location
 		pillarSprite = Sprite::createWithSpriteFrameName(s_scene_3_pillars[2]);
 		pillarSprite->setPosition(origin.x + 200 + pillarSprite->getContentSize().width, origin.y + pillarSprite->getContentSize().height / 2);
-		pillarSprite->retain();
+		//pillarSprite->retain();
 		pillarSprites.pushBack(pillarSprite);
 
 		pillarSprite = obtainRandomLastPillar();
-		pillarSprite->retain();
+		//pillarSprite->retain();
 		pillarSprites.pushBack(pillarSprite);
 
 		auto stickSprite = Sprite::createWithSpriteFrameName(s_stick);
@@ -67,7 +60,10 @@ bool GameLayer::init()
 		
 		// attention how to set anchor point
 		stickSprite->setAnchorPoint(Vec2(0.5, 0));
-		stickSprite->retain();
+		
+		// Attention: pushBack(obj) will call obj->retain(), so do not need 
+		// to call retain() manually
+		//stickSprite->retain();
 
 		// at the initial state, the first stick is not visible
 		stickSprite->setPosition(-100, 
@@ -76,7 +72,7 @@ bool GameLayer::init()
 
 		stickSprite = Sprite::createWithSpriteFrameName(s_stick);
 		stickSprite->setAnchorPoint(Vec2(0.5, 0));
-		stickSprite->retain();
+		//stickSprite->retain();
 		stickSprite->setPosition(spite->getPosition().x + spite->getContentSize().width / 2, 
 									spite->getPosition().y + spite->getContentSize().height / 2);
 		stickSprites.pushBack(stickSprite);
@@ -256,11 +252,12 @@ void GameLayer::onMoveLeftEnd()
 	auto pillarSprite = pillarSprites.at(0);
 	spritesNode->removeChild(pillarSprite, true);
 	pillarSprites.eraseObject(pillarSprite, false);
-	pillarSprite->release();
+	// the pillarSprite will be be released in eraseObject
+	//pillarSprite->release();
 
 	pillarSprite = pillarSprites.at(1);
 	pillarSprite = obtainRandomLastPillar();
-	pillarSprite->retain();
+	//pillarSprite->retain();
 	pillarSprites.pushBack(pillarSprite);
 	spritesNode->addChild(pillarSprite);
 
@@ -268,14 +265,14 @@ void GameLayer::onMoveLeftEnd()
 	auto stickSprite = stickSprites.at(0);
 	spritesNode->removeChild(stickSprite, true);
 	stickSprites.eraseObject(stickSprite, false);
-	stickSprite->release();
+	//stickSprite->release();
 
 	// add a new stick
 	// TODO refactor to a function?
 	stickSprite = Sprite::createWithSpriteFrameName(s_stick);
 	pillarSprite = pillarSprites.at(0);
 	stickSprite->setAnchorPoint(Vec2(0.5, 0));
-	stickSprite->retain();
+	//stickSprite->retain();
 	stickSprite->setPosition(pillarSprite->getPosition().x + pillarSprite->getContentSize().width / 2, 
 								pillarSprite->getPosition().y + pillarSprite->getContentSize().height / 2);
 	stickSprites.pushBack(stickSprite);
